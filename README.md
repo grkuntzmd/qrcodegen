@@ -3,7 +3,7 @@
 ## Installation
 
 ```
-got get -u github.com/grkuntzmd/qrcodegen
+go get -u github.com/grkuntzmd/qrcodegen
 ```
 
 This package provides a QR Code generator that supports most of ISO/IEC
