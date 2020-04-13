@@ -19,7 +19,7 @@ import "github.com/grkuntzmd/qrcodegen"
 
 qrCode := EncodeText("Hello, World!", Medium) // Second parameter is the error correction level (Low, Medium, Quartile, High).
 svg := qrCode.ToSVGString(2, false)           // First parameter is the border width in "modules" and the second is true if you
-                                              // want a "DOCTYPE" line included.
+											  // want a "DOCTYPE" line included.
 ```
 
 #### More complex example
@@ -28,12 +28,12 @@ svg := qrCode.ToSVGString(2, false)           // First parameter is the border w
 import "github.com/grkuntzmd/qrcodegen"
 
 segs := []*QRSegment{
-    MakeAlphanumeric("SUDOKU://"),
-    MakeNumeric("007020004930000600600300000000000050200010008006900400003700900020050001000008000"),
+	MakeAlphanumeric("SUDOKU://"),
+	MakeNumeric("007020004930000600600300000000000050200010008006900400003700900020050001000008000"),
 }
 qrCode, err := EncodeSegments(segs, Low, WithAutoMask())
 if err != nil {
-    // Handle this.
+	// Handle this.
 }
 svg := qrCode.ToSVGString(4, true)
 ```
@@ -44,11 +44,11 @@ If you want to produce an image instead of SVG, you can access the fields in the
 ```go
 type QRCode struct {
 	Version                         // The QR code version, a number in the range [1, 40].
-    Size                 int        // The width and height of the square QR code symbol as measured in "modules"
-    ErrorCorrectionLevel ECL        // The error correction level used in this QR code (Low, Medium, Quartile, or High).
+	Size                 int        // The width and height of the square QR code symbol as measured in "modules"
+	ErrorCorrectionLevel ECL        // The error correction level used in this QR code (Low, Medium, Quartile, or High).
 	Mask                            // The type of mask [0, 7] used in this QR code.
-    Modules              [][]Module // The modules ("pixels") that make up this QR code (black = 1, white = 0)
-    // Other fields are private.
+	Modules              [][]Module // The modules ("pixels") that make up this QR code (black = 1, white = 0)
+	// Other fields are private.
 }
 ```
 
