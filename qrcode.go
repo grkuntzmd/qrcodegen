@@ -27,7 +27,7 @@ import (
 type QRCode struct {
 	Version                         // The QR code version, a number in the range [1, 40].
 	Size                 int        // The width and height of the square QR code symbol as measured in "modules" (smallest square, either black or white, in a QR code).
-	ErrorCorrectionLevel ECC        // The error correction level used in this QR code.
+	ErrorCorrectionLevel ECL        // The error correction level used in this QR code.
 	Mask                            // The type of mask [0, 7] used in this QR code.
 	Modules              [][]module // The modules ("pixels") that make up this QR code (black = 1, white = 0)
 	IsFunction           [][]bool   // Indicates that a module is a "function" (contains metadata and does not represent part of the message of the QR code).
@@ -48,13 +48,13 @@ const (
 )
 
 // EncodeBinary encodes a byte slice into a QR code symbol with the given error correction level.
-func EncodeBinary(data []byte, ecl ECC) (*QRCode, error) {
+func EncodeBinary(data []byte, ecl ECL) (*QRCode, error) {
 	seg := MakeBytes(data)
 	return EncodeSegments([]*QRSegment{seg}, ecl)
 }
 
 // EncodeSegments creates the QR code structure from one or more QR segments.
-func EncodeSegments(segs []*QRSegment, ecl ECC, options ...func(*segmentEncoder)) (*QRCode, error) {
+func EncodeSegments(segs []*QRSegment, ecl ECL, options ...func(*segmentEncoder)) (*QRCode, error) {
 	s := segmentEncoder{
 		boostECL:   true,
 		mask:       -1, // Set to automatic mask selection.
@@ -165,7 +165,7 @@ func EncodeSegments(segs []*QRSegment, ecl ECC, options ...func(*segmentEncoder)
 
 // EncodeText encodes text as a QR code symbol with the given error correction
 // level.
-func EncodeText(text string, ecl ECC) (*QRCode, error) {
+func EncodeText(text string, ecl ECL) (*QRCode, error) {
 	segs := MakeSegments(text)
 	return EncodeSegments(segs, ecl)
 }
@@ -211,46 +211,46 @@ func (q *QRCode) addECCAndInterleave(data []byte) []byte {
 	return result
 }
 
-func (q *QRCode) String() string {
-	var sb strings.Builder
-	sb.WriteString("QRCode\n")
-	fmt.Fprintf(&sb, "\tVersion: %d\n", q.Version)
-	fmt.Fprintf(&sb, "\tSize: %d\n", q.Size)
-	fmt.Fprintf(&sb, "\tErrorCorrectionLevel: %d\n", q.ErrorCorrectionLevel)
-	fmt.Fprintf(&sb, "\tMask: %d\n", q.Mask)
-	sb.WriteString("\tModules\n")
-	for y := 0; y < q.Size; y++ {
-		sb.WriteString("\t\t")
-		for x := 0; x < q.Size; x++ {
-			if q.Modules[y][x] == 1 {
-				sb.WriteString("░")
-			} else {
-				sb.WriteString("▓")
-			}
-			// fmt.Fprintf(&sb, "%d", q.Modules[y][x])
-		}
-		sb.WriteString("\n")
-	}
-	// sb.WriteString("\tIsFunction")
-	// if q.IsFunction == nil {
-	// 	sb.WriteString(" nil\n")
-	// } else {
-	// 	sb.WriteString("\n")
-	// 	for y := 0; y < q.Size; y++ {
-	// 		sb.WriteString("\t\t")
-	// 		for x := 0; x < q.Size; x++ {
-	// 			if q.IsFunction[y][x] {
-	// 				sb.WriteString("1")
-	// 			} else {
-	// 				sb.WriteString("0")
-	// 			}
-	// 		}
-	// 		sb.WriteString("\n")
-	// 	}
-	// }
+// func (q *QRCode) String() string {
+// 	var sb strings.Builder
+// 	sb.WriteString("QRCode\n")
+// 	fmt.Fprintf(&sb, "\tVersion: %d\n", q.Version)
+// 	fmt.Fprintf(&sb, "\tSize: %d\n", q.Size)
+// 	fmt.Fprintf(&sb, "\tErrorCorrectionLevel: %d\n", q.ErrorCorrectionLevel)
+// 	fmt.Fprintf(&sb, "\tMask: %d\n", q.Mask)
+// 	sb.WriteString("\tModules\n")
+// 	for y := 0; y < q.Size; y++ {
+// 		sb.WriteString("\t\t")
+// 		for x := 0; x < q.Size; x++ {
+// 			if q.Modules[y][x] == 1 {
+// 				sb.WriteString("░")
+// 			} else {
+// 				sb.WriteString("▓")
+// 			}
+// 			// fmt.Fprintf(&sb, "%d", q.Modules[y][x])
+// 		}
+// 		sb.WriteString("\n")
+// 	}
+// 	sb.WriteString("\tIsFunction")
+// 	if q.IsFunction == nil {
+// 		sb.WriteString(" nil\n")
+// 	} else {
+// 		sb.WriteString("\n")
+// 		for y := 0; y < q.Size; y++ {
+// 			sb.WriteString("\t\t")
+// 			for x := 0; x < q.Size; x++ {
+// 				if q.IsFunction[y][x] {
+// 					sb.WriteString("1")
+// 				} else {
+// 					sb.WriteString("0")
+// 				}
+// 			}
+// 			sb.WriteString("\n")
+// 		}
+// 	}
 
-	return sb.String()
-}
+// 	return sb.String()
+// }
 
 // ToSVGString returns a scalable vector graphics (SVG) representation of the QR
 // code.

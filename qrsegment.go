@@ -47,7 +47,7 @@ func getTotalBits(segs []*QRSegment, version Version) int {
 			return -1 // The segment's length does not fit the field's bit width.
 		}
 
-		result += int64(4 + int(ccBits) + len(seg.Data))
+		result += int64(4) + int64(ccBits) + int64(len(seg.Data))
 		if result > math.MaxInt32 {
 			return -1 // The sum will overflow an integer type.
 		}

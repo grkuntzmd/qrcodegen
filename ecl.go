@@ -16,18 +16,18 @@
 
 package qrcodegen
 
-// ECC represents the error cvorrection level of the QR code.
-type ECC int8
+// ECL represents the error correction level of the QR code.
+type ECL int8
 
-// ECC values.
+// ECL values.
 const (
-	Low      ECC = iota // Low error correction level (recovers 7% of data).
+	Low      ECL = iota // Low error correction level (recovers 7% of data).
 	Medium              // Medium error correction level (recovers 15% of data).
 	Quartile            // Quartile error correction level (recovers 25% of data).
 	High                // High error correction level (recovers 30% of data).
 )
 
-func (e ECC) formatBits() int {
+func (e ECL) formatBits() int {
 	switch e {
 	case Low:
 		return 1
