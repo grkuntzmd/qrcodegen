@@ -16,4 +16,5 @@
 
 package qrcodegen
 
-type module byte
+// Module represents a "pixel" in the QR code.
+type Module byte

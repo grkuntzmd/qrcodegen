@@ -121,7 +121,7 @@ func bToI(b bool) int {
 	return 0
 }
 
-func bToModule(b bool) module {
+func bToModule(b bool) Module {
 	if b {
 		return 1
 	}

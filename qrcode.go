@@ -29,8 +29,8 @@ type QRCode struct {
 	Size                 int        // The width and height of the square QR code symbol as measured in "modules" (smallest square, either black or white, in a QR code).
 	ErrorCorrectionLevel ECL        // The error correction level used in this QR code.
 	Mask                            // The type of mask [0, 7] used in this QR code.
-	Modules              [][]module // The modules ("pixels") that make up this QR code (black = 1, white = 0)
-	IsFunction           [][]bool   // Indicates that a module is a "function" (contains metadata and does not represent part of the message of the QR code).
+	Modules              [][]Module // The modules ("pixels") that make up this QR code (black = 1, white = 0)
+	isFunction           [][]bool   // Indicates that a module is a "function" (contains metadata and does not represent part of the message of the QR code).
 }
 
 // The maximum and minimum versions (QR code sizes) for a QR code symbol.
@@ -144,13 +144,13 @@ func EncodeSegments(segs []*QRSegment, ecl ECL, options ...func(*segmentEncoder)
 		Version:              version,
 		Size:                 size,
 		ErrorCorrectionLevel: ecl,
-		Modules:              make([][]module, size),
-		IsFunction:           make([][]bool, size),
+		Modules:              make([][]Module, size),
+		isFunction:           make([][]bool, size),
 	}
 
 	for i := 0; i < size; i++ {
-		qrCode.Modules[i] = make([]module, size)
-		qrCode.IsFunction[i] = make([]bool, size)
+		qrCode.Modules[i] = make([]Module, size)
+		qrCode.isFunction[i] = make([]bool, size)
 	}
 
 	qrCode.drawFunctionPatterns()
@@ -158,7 +158,7 @@ func EncodeSegments(segs []*QRSegment, ecl ECL, options ...func(*segmentEncoder)
 	qrCode.drawCodewords(allCodeWords)
 	qrCode.Mask = qrCode.handleConstructorMasking(s.mask)
 
-	qrCode.IsFunction = nil
+	qrCode.isFunction = nil
 
 	return &qrCode, nil
 }
@@ -310,7 +310,7 @@ func (q *QRCode) applyMask(mask Mask) {
 			default:
 				panic("illegal mask value")
 			}
-			q.Modules[y][x] ^= module(bToI(invert && !q.IsFunction[y][x]))
+			q.Modules[y][x] ^= Module(bToI(invert && !q.isFunction[y][x]))
 		}
 	}
 }
@@ -352,8 +352,8 @@ func (q *QRCode) drawCodewords(data []byte) {
 					y = vert
 				} // Actual y coordinate.
 
-				if !q.IsFunction[y][x] && i < len(data)*8 {
-					q.Modules[y][x] = module(getBit(int(data[i>>3]), 7-(i&7)))
+				if !q.isFunction[y][x] && i < len(data)*8 {
+					q.Modules[y][x] = Module(getBit(int(data[i>>3]), 7-(i&7)))
 					i++
 				}
 				// If this QR code has any remainder bits (0 to 7), they were
@@ -501,7 +501,7 @@ func (q *QRCode) finderPenaltyCountPatterns(runHistory *[7]int) int {
 }
 
 // finderPenaltyTerminateAndCount adds the penalty at the end of a finder-like pattern.
-func (q *QRCode) finderPenaltyTerminateAndCount(runColor module, runLength int, runHistory *[7]int) int {
+func (q *QRCode) finderPenaltyTerminateAndCount(runColor Module, runLength int, runHistory *[7]int) int {
 	if runColor == 1 { // Terminate a black run.
 		q.finderPenaltyAddHistory(runLength, runHistory)
 		runLength = 0
@@ -545,7 +545,7 @@ func (q *QRCode) getPenaltyScore() int {
 	// Adjacent modules in a row having the same color, and finder-like
 	// patterns.
 	for y := 0; y < q.Size; y++ {
-		runColor := module(0)
+		runColor := Module(0)
 		runX := 0
 		var runHistory [7]int
 		for x := 0; x < q.Size; x++ {
@@ -571,7 +571,7 @@ func (q *QRCode) getPenaltyScore() int {
 	// Adjacent modules in a column having the same color, and finder-like
 	// patterns.
 	for x := 0; x < q.Size; x++ {
-		runColor := module(0)
+		runColor := Module(0)
 		runY := 0
 		var runHistory [7]int
 		for y := 0; y < q.Size; y++ {
@@ -716,5 +716,5 @@ func reedSolomonComputeRemainder(data, divisor []byte) []byte {
 
 func (q *QRCode) setFunctionModule(x, y int, isBlack bool) {
 	q.Modules[y][x] = bToModule(isBlack)
-	q.IsFunction[y][x] = true
+	q.isFunction[y][x] = true
 }

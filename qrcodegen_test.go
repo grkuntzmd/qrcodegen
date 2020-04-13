@@ -225,13 +225,13 @@ func TestDrawFunctionPatterns(t *testing.T) {
 		qrCode := QRCode{
 			Version:    version,
 			Size:       size,
-			Modules:    make([][]module, size),
-			IsFunction: make([][]bool, size),
+			Modules:    make([][]Module, size),
+			isFunction: make([][]bool, size),
 		}
 
 		for i := 0; i < size; i++ {
-			qrCode.Modules[i] = make([]module, size)
-			qrCode.IsFunction[i] = make([]bool, size)
+			qrCode.Modules[i] = make([]Module, size)
+			qrCode.isFunction[i] = make([]bool, size)
 		}
 
 		qrCode.drawFunctionPatterns()
