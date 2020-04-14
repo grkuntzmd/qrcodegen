@@ -1,5 +1,7 @@
 # QR Code Generator for Go
 
+MIT License
+
 ## Installation
 
 ```
